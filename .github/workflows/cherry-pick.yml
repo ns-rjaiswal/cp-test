@@ -1,0 +1,37 @@
+name: Cherry-pick to release branches
+on:
+  pull_request:
+    branches:
+      - test1
+      - test2
+      - test1
+    types: ["closed"]
+jobs:
+  cherry_pick:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        label:
+          - test1
+          - test2
+          - test1
+    name: Cherry pick into ${{ matrix.label }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Get short SHA
+        run: |
+          echo "SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_ENV
+      - name: Cherry pick into ${{ matrix.label }}
+        if: contains(github.event.pull_request.labels.*.name, matrix.label) && github.event.pull_request.merged == true && contains(github.event.pull_request.title, 'cherry-pick-bot') == false
+        uses: infiotinc/github-cherry-pick-action@v1.0.1
+        with:
+          cherry-pick-branch: cherry-pick-${{ env.SHORT_SHA }}-${{ matrix.label }}
+          inherit_labels: false
+          branch: ${{ matrix.label }}
+          title: '[cherry-pick-bot] {old_title}'
+          body: 'Cherry picking #${{ github.event.pull_request.number }} / ${{ github.event.pull_request.merge_commit_sha }} onto ${{ matrix.label }} branch'
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
