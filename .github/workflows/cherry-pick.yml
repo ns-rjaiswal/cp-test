@@ -30,7 +30,7 @@ jobs:
         if: contains(github.event.pull_request.labels.*.name, matrix.label) && github.event.pull_request.merged == true && contains(github.event.pull_request.title, 'cherry-pick-bot') == false
         uses: infiotinc/github-cherry-pick-action@v1.0.1
         with:
-          token: ${{ secrets.WORKFLOW_BOT_TOKEN }}
+          #token: ${{ secrets.GITHUB_TOKEN }}
           cherry-pick-branch: cherry-pick-${{ env.SHORT_SHA }}-${{ matrix.label }}
           inherit_labels: false
           branch: ${{ matrix.label }}
@@ -59,4 +59,4 @@ jobs:
       #   env:
       #     SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 env:
-  GITHUB_TOKEN: ${{ secrets.WORKFLOW_BOT_TOKEN }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
