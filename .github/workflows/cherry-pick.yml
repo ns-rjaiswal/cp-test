@@ -37,6 +37,7 @@ jobs:
           title: "[cherry-pick-bot] {old_title}"
           body: "Cherry picking #${{ github.event.pull_request.number }} / ${{ github.event.pull_request.merge_commit_sha }} onto ${{ matrix.label }} branch"
       - name: split username
+        if: always()
         env:
           USERNAME: ${{ github.event.pull_request.user.login }}    
         id: split
@@ -48,6 +49,7 @@ jobs:
             echo "NS_USERNAME=$email" >> "$GITHUB_OUTPUT"
           fi
       - name: print
+        if: always()
         env:
           USERNAME: ${{ steps.split.outputs.NS_USERNAME }}
         run: |
