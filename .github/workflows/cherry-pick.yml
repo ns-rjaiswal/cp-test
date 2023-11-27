@@ -40,7 +40,7 @@ jobs:
         if: always()
         env:
           USERNAME: venkyfff
-          USERNAMES_MAPPING: ${{ vars.USERNAMES_MAPPING }}
+          #USERNAMES_MAPPING: ${{ vars.USERNAMES_MAPPING }}
           #USERNAME: ${{ github.event.pull_request.user.login }}    
         id: split
         run: |
@@ -48,8 +48,7 @@ jobs:
           if [[ "$USERNAME" =~ ^ns-.* ]] ; then
             echo "NS_USERNAME=${USERNAME##*-}@netskope.com" >> "$GITHUB_OUTPUT"
           elif [[ "$USERNAME" =~ \fff$ ]] ; then
-            echo $USERNAMES_MAPPING > user_map
-            email=`cat user_map | grep $USERNAME | cut -d "," -f2`
+            email=`cat user_mapping | grep $USERNAME | cut -d "," -f2`
             echo "NS_USERNAME=$email" >> "$GITHUB_OUTPUT"
           fi
       - name: print
