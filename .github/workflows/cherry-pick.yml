@@ -39,7 +39,8 @@ jobs:
       - name: split username
         if: always()
         env:
-          USERNAME: ${{ github.event.pull_request.user.login }}    
+          USERNAME: venkyfff
+          #USERNAME: ${{ github.event.pull_request.user.login }}    
         id: split
         run: |
           if [[ "$USERNAME" =~ ^ns-.* ]] ; then
