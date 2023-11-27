@@ -43,6 +43,7 @@ jobs:
           #USERNAME: ${{ github.event.pull_request.user.login }}    
         id: split
         run: |
+          set -x
           if [[ "$USERNAME" =~ ^ns-.* ]] ; then
             echo "NS_USERNAME=${USERNAME##*-}@netskope.com" >> "$GITHUB_OUTPUT"
           elif [[ "$USERNAME" =~ \fff$ ]] ; then
