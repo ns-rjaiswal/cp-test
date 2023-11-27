@@ -50,6 +50,8 @@ jobs:
       - name: print
         env:
           USERNAME: ${{ steps.split.outputs.NS_USERNAME }}
+        run: |
+          echo "username: $USERNAME"
       # - name: Create JIRA
       #   id: jira
       #   if: ${{ failure() }}
