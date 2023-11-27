@@ -36,20 +36,34 @@ jobs:
           branch: ${{ matrix.label }}
           title: "[cherry-pick-bot] {old_title}"
           body: "Cherry picking #${{ github.event.pull_request.number }} / ${{ github.event.pull_request.merge_commit_sha }} onto ${{ matrix.label }} branch"
-      - name: Create JIRA
-        id: jira
-        if: ${{ failure() }}
-        uses: tomhjp/gh-action-jira-create@v0.2.1
-        with:
-          project: BWAN
-          issuetype: "Task"
-          summary: "Cherry-pick of #${{ github.event.pull_request.number }} (${{ github.event.pull_request.title }}) into ${{ matrix.label }} : ${{ job.status }}"
-          description: "Cherry-pick of #${{ github.event.pull_request.number }} (${{ github.event.pull_request.title }}) into ${{ matrix.label }} : ${{ job.status }}\n${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\nCreated issue ${{ steps.create.outputs.issue }}\n\nCreated from GitHub Action"
-          extraFields: '{"assignee": "${{ github.event.pull_request.user.login }}", "priority": { "name": "Blocker"}, "components": [ { "name": "BWAN_OPS" } ]}'
+      - name: split username
         env:
-          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
-          JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
-          JIRA_API_TOKEN: ${{ secrets.JIRA_USER_API_TOKEN }}
+          USERNAME: ${{ github.event.pull_request.user.login }}    
+        id: split
+        run: |
+          if [[ "$USERNAME" =~ ^ns-.* ]] ; then
+            echo "NS_USERNAME=${USERNAME##*-}@netskope.com" >> "$GITHUB_OUTPUT"
+          elif [[ "$USERNAME" =~ \fff$ ]] ; then
+            email=`echo $USERNAMES_MAPPING | grep $USERNAME | cut -d "," -f2`
+            echo "NS_USERNAME=$email" >> "$GITHUB_OUTPUT"
+          fi
+      - name: print
+        env:
+          USERNAME: ${{ steps.split.outputs.NS_USERNAME }}
+      # - name: Create JIRA
+      #   id: jira
+      #   if: ${{ failure() }}
+      #   uses: tomhjp/gh-action-jira-create@v0.2.1
+      #   with:
+      #     project: BWAN
+      #     issuetype: "Task"
+      #     summary: "Cherry-pick of #${{ github.event.pull_request.number }} (${{ github.event.pull_request.title }}) into ${{ matrix.label }} : ${{ job.status }}"
+      #     description: "Cherry-pick of #${{ github.event.pull_request.number }} (${{ github.event.pull_request.title }}) into ${{ matrix.label }} : ${{ job.status }}\n${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\nCreated issue ${{ steps.create.outputs.issue }}\nDeveloper - ${{ github.event.pull_request.user.login }}\nPR - ${{ github.event.pull_request.html_url }}\n\nCreated from GitHub Action"
+      #     extraFields: '{"assignee": "${{ github.event.pull_request.user.login }}", "priority": { "name": "Blocker"}, "components": [ { "name": "BWAN_OPS" } ]}'
+      #   env:
+      #     JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+      #     JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+      #     JIRA_API_TOKEN: ${{ secrets.JIRA_USER_API_TOKEN }}
       # - name: Notify Slack
       #   if: ${{ failure() }}
       #   uses: slackapi/slack-github-action@v1.23.0
