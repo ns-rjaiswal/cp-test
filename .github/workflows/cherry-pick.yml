@@ -40,6 +40,7 @@ jobs:
         if: always()
         env:
           USERNAME: venkyfff
+          USERNAMES_MAPPING: ${{ vars.USERNAMES_MAPPING }}
           #USERNAME: ${{ github.event.pull_request.user.login }}    
         id: split
         run: |
