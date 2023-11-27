@@ -48,7 +48,8 @@ jobs:
           if [[ "$USERNAME" =~ ^ns-.* ]] ; then
             echo "NS_USERNAME=${USERNAME##*-}@netskope.com" >> "$GITHUB_OUTPUT"
           elif [[ "$USERNAME" =~ \fff$ ]] ; then
-            email=`echo $USERNAMES_MAPPING | grep $USERNAME | cut -d "," -f2`
+            echo $USERNAMES_MAPPING > user_map
+            email=`cat user_map | grep $USERNAME | cut -d "," -f2`
             echo "NS_USERNAME=$email" >> "$GITHUB_OUTPUT"
           fi
       - name: print
