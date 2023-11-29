@@ -36,25 +36,24 @@ jobs:
           branch: ${{ matrix.label }}
           title: "[cherry-pick-bot] {old_title}"
           body: "Cherry picking #${{ github.event.pull_request.number }} / ${{ github.event.pull_request.merge_commit_sha }} onto ${{ matrix.label }} branch"
-      - name: split username
+      - name: Get user email id
         if: always()
         env:
-          USERNAME: venkyfff
-          #USERNAMES_MAPPING: ${{ vars.USERNAMES_MAPPING }}
-          #USERNAME: ${{ github.event.pull_request.user.login }}    
-        id: split
+          USERNAME: ${{ github.event.pull_request.user.login }}
+        id: email
         run: |
-          set -x
-          if [[ "$USERNAME" =~ ^ns-.* ]] ; then
-            echo "NS_USERNAME=${USERNAME##*-}@netskope.com" >> "$GITHUB_OUTPUT"
-          elif [[ "$USERNAME" =~ \fff$ ]] ; then
-            email=`cat user_mapping | grep $USERNAME | cut -d "," -f2`
-            echo "NS_USERNAME=$email" >> "$GITHUB_OUTPUT"
+          if grep -wq "${USERNAME}" github_account_to_ns_username.csv ; then
+            ns_username=`cat github_account_to_ns_username.csv | grep $USERNAME | cut -d "," -f2`
+            echo "NS_EMAIL=${ns_username}@netskope.com" >> "$GITHUB_OUTPUT"
+          elif [[ "$USERNAME" =~ ^ns-.* ]] ; then
+            echo "NS_EMAIL=${USERNAME##*-}@netskope.com" >> "$GITHUB_OUTPUT"
+          else
+            echo "NS_EMAIL=vt-borderlesswan-eng" >> "$GITHUB_OUTPUT"    ## Send message to this channel if above 2 cases fails
           fi
       - name: print
         if: always()
         env:
-          USERNAME: ${{ steps.split.outputs.NS_USERNAME }}
+          USERNAME: ${{ steps.split.outputs.NS_EMAIL }}
         run: |
           echo "username: $USERNAME"
       # - name: Create JIRA
