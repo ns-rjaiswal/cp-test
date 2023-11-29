@@ -39,7 +39,7 @@ jobs:
       - name: Get user email id
         if: always()
         env:
-          USERNAME: ${{ github.event.pull_request.user.login }}
+          USERNAME: "abcfff"   ##${{ github.event.pull_request.user.login }}
         id: email
         run: |
           if grep -wq "${USERNAME}" github_account_to_ns_username.csv ; then
