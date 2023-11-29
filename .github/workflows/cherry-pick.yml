@@ -53,7 +53,7 @@ jobs:
       - name: print
         if: always()
         env:
-          USERNAME: ${{ steps.split.outputs.NS_EMAIL }}
+          USERNAME: ${{ steps.email.outputs.NS_EMAIL }}
         run: |
           echo "username: $USERNAME"
       # - name: Create JIRA
